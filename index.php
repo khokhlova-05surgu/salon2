@@ -1,14 +1,33 @@
 <?php
+date_default_timezone_set('Asia/Yekaterinburg');
 require "dbconnect.php";
-if($conn->connect_error){
-    die("Ошибка: невозможно подключиться:". $conn->connect_error);
+require "auth.php";
+require "menu.php";
+echo '<main class="container" style="margin-top: 100px">';
+switch ($_GET['page']){
+    case 'c':
+        if (isset($_SESSION['login'])) {
+            require "categories.php";
+        }
+        else{
+            $msg = 'Войдите в систему для просмотра и создания услуг';
+        }
+        break;
+    case 't':
+        if (isset($_SESSION['login'])){
+            require "tasks.php";
+            require "taskform.php";
+        }
+        else{
+            $msg = 'Войдите в систему для просмотра и создания косметологов';
+        }
+        break;
 }
-echo 'Подключились к базе.<br>';
+echo '</main>';
 
-$result = $conn->query("SELECT *  FROM Cosmet") ;
-echo "<h2>Список косметологов</h2>";
-echo 'ID'.' '.'FIO'."<br>";
-while ($row = $result->fetch()) {
-    echo $row['ID'].' '.$row['FIO']."<br>";
-
+if(($_SESSION['msg']!='') or isset($msg)) {
+    require "message.php";
+    $_SESSION['msg']= '';
 }
+require "footer.php";
+?>
